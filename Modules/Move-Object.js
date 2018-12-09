@@ -46,12 +46,12 @@ Theo.MoveObject.prototype.isMoving = function(){
 Theo.MoveObject.prototype.updateMove = function(){
 	if (!this.isMoving()) {return};
 	this.duration -= 1;
-    this.realX += this.xSpeed;
-    this.realY += this.ySpeed;
+	this.realX += this.xSpeed;
+	this.realY += this.ySpeed;
 	this.onUpdate();
-    this.jump -= this.jumpInterval;
-    this.offset -= this.jump;
-    if (!this.isMoving()) {
+        this.jump -= this.jumpInterval;
+    	this.offset -= this.jump;
+    	if (!this.isMoving()) {
 		this.onFinish();
 		this.initialize();
 	};
