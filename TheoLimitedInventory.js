@@ -148,13 +148,13 @@ slot. Should be self explanatory
 @desc Vocab for canceling
 
  */ 
-var Theo = Theo || {};
-Theo.LINV = {};
-Theo.LINV.Params = PluginManager.parameters('TheoLimitedInventory');
+var Theo = Theo || function(){ throw new Error('This is a static class')}
+Theo.LINV = {}
+Theo.LINV.Params = PluginManager.parameters('TheoLimitedInventory')
 
 Theo.LINV.invSizeREGX = /<inv[\s_]+size\s*:\s*(\d+)>/i
 Theo.LINV.invPlusREGX = /<inv[\s_]+plus\s*:\s*(\d+)>/i
-Theo.LINV.invMinsREGX = /<inv[\s_]+minus\s*:\s*(\d+)/i;
+Theo.LINV.invMinsREGX = /<inv[\s_]+minus\s*:\s*(\d+)/i
 
 //===================================================================
 // ** DataManager
@@ -179,8 +179,9 @@ DataManager.isDatabaseLoaded = function(){
 
 Theo.LINV.loadActorDefault = function(actors){
 	actors.forEach(function(actor){
-		if(actor === null){return};
-		actor.invMod = Theo.LINV.Params['defaultFree'];
+		if(!actor){return};
+		actor.invMod = Number(Theo.LINV.Params['defaultFree']);
+		console.log(actor.invMod);
 	})
 }
 
@@ -228,13 +229,13 @@ Game_Actor.prototype.equipSize = function(){
 // TO DO = Add Eval
 Game_Actor.prototype.invMax = function(){
 	var size = this.getBaseInv();
-	size += $dataClasses[this._classId];
+	size += $dataClasses[this._classId].invMod;
 	size += this.states().reduce(function(total, state){total + state.invMod}, 0);
 	size += this.equips().reduce(function(total, eq){
-		if(eq === null){return total + 0};
+		if(!eq){return total + 0};
 		return total + eq.invMod;
-	},0)
-	return size;
+	},0);
+	return Number(size);
 }
 
 // Overwrite
@@ -376,9 +377,13 @@ Game_Player.prototype.movePenalty = function(){
 //===================================================================
 // ** Window_Base
 //===================================================================
-Window_Base.prototype.drawInvSlot = function(x, y, width, align = 2){
-	let txt = '${$gameParty.totalInvSize}/${$gameParty.invMax}';
-	let colorId = Theo.LINV.Params['nearMaxColor'];
+Window_Base.prototype.drawInvSlot = function(x, y, width, align = 'right'){
+	// let txt = `${$gameParty.totalInvSize()}/${$gameParty.invMax()}`;
+	let total = String($gameParty.totalInvSize());
+	let invmax = String($gameParty.invMax());
+	let txt = total + "/" + invmax;
+	console.log(invmax);
+	let colorId = Number(Theo.LINV.Params['nearMaxColor']);
 	if ($gameParty.isNearingMax()){
 		this.changeTextColor(this.textColor(colorId));
 	}else{
@@ -400,7 +405,7 @@ Window_Base.prototype.drawItemSize = function(item, x, y, width, total = true){
 	this.drawText(Theo.LINV.Params['invSizeVocab'], x, y, width);
 	this.changeTextColor(this.normalColor());
 	let num = (Theo.LINV.Params['drawTotalSize'] && total) ? $gameParty.itemSize(item) : item === null ? 0 : item.invSize;
-	this.drawText(num, x, y, width, 2);
+	this.drawText(num, x, y, width, 'right');
 }
 //===================================================================
 // ** Limited Inventory - Window_MainMenu
@@ -414,15 +419,14 @@ Theo.LINV.Window_MainMenu.prototype.constructor = Theo.LINV.Window_MainMenu;
 
 Theo.LINV.Window_MainMenu.prototype.initialize = function(width) {
   Window_Base.prototype.initialize.call(this,0,0,width,this.fittingHeight(1));
-	this.refresh();
 };
 
 Theo.LINV.Window_MainMenu.prototype.refresh = function(){
 	this.contents.clear();
 	this.changeTextColor(this.systemColor());
 	let txt = Theo.LINV.Params['slotShort'];
-	this.drawText(txt, 0, 0, contents.width);
-	this.drawInvSlot(0, 0, contents.width);
+	this.drawText(txt, 0, 0, this.contents.width);
+	this.drawInvSlot(0, 0, this.contents.width);
 }
 //===================================================================
 // ** Limited Inventory - Window_ItemSize
@@ -445,7 +449,7 @@ Theo.LINV.Window_ItemSize.prototype.setItem = function(item) {
 
 Theo.LINV.Window_ItemSize.prototype.refresh = function(){
 	this.contents.clear();
-	this.drawItemSize(this.item,0,0,contents.width);
+	this.drawItemSize(this.item,0,0,this.contents.width);
 }
 //===================================================================
 // ** Limited Inventory - Window_FreeSlot
@@ -457,14 +461,13 @@ Theo.LINV.Window_FreeSlot = function(){
 Theo.LINV.Window_FreeSlot.prototype = Object.create(Window_Base.prototype);
 Theo.LINV.Window_FreeSlot.prototype.constructor = Theo.LINV.Window_FreeSlot;
 
-Theo.LINV.Window_FreeSlot.prototype.initialize = function(width) {
-  Window_Base.prototype.initialize.call(this,0,0,width,this.fittingHeight(1));
-	this.refresh();
+Theo.LINV.Window_FreeSlot.prototype.initialize = function(x,y,width) {
+  Window_Base.prototype.initialize.call(this,x,y,width,this.fittingHeight(1));
 };
 
 Theo.LINV.Window_FreeSlot.prototype.refresh = function(){
 	this.contents.clear();
-	this.drawInvInfo(0,0,contents.width);
+	this.drawInvInfo(0,0,this.contents.width);
 }
 //===================================================================
 // ** Limited Inventory - Window_ItemUse
@@ -532,8 +535,8 @@ Theo.LINV.Window_Discard.prototype.refresh = function(){
 	this.contents.clear();
 	if(!this._item){return};
 	this.drawItemName(this._item, 0, 0, contents.width);
-	let txt = '${this._amount}/${$gameParty.numItems(this._item)}';
-	this.drawText(txt,0,0,this.contents.width,2)
+	let txt = String(this._amount)+"/"+String($gameParty.numItems(this._item));
+	this.drawText(txt,0,0,this.contents.width,'right')
 }
 
 Theo.LINV.Window_Discard.prototype.drawItemName = function(item, x, y, width){
@@ -545,7 +548,12 @@ Theo.LINV.Window_Discard.prototype.drawItemName = function(item, x, y, width){
 Theo.LINV.Window_Discard.prototype.update = function(){
 	Window_Base.prototype.update.call(this);
 	if (!isOpen()){return};
-	// CHANGE AMOUNT HERE LATER
+	if (Input.isRepeated('right')) {this.changeAmount(1)};
+	if (Input.isRepeated('left')) {this.changeAmount(-1)};
+	if (Input.isRepeated('up')) {this.changeAmount(10)};
+	if (Input.isRepeated('down')) {this.changeAmount(-10)};
+	if (Input.isTriggered('ok')){this.loseItem()};
+	if (Input.isTriggered('cancel')){this.closeWindow()};
 }
 
 Theo.LINV.Window_Discard.prototype.changeAmount = function(amount){
@@ -591,7 +599,164 @@ Window_ItemList.prototype.updateHelp = function(){
 	this._itemSizeWindow.setItem(this.item);
 }
 
+Window_ItemList.prototype.changeHeight = function(height){
+	this.height = height;
+	this.refresh();
+}
+
 // Overwrite
 Window_ItemList.prototype.isEnabled = function(item) {
   if (item){return true}else{return false};
+};
+//===================================================================
+// ** Default Script - Window_ShopNumber
+//===================================================================
+Theo.LINV.shopNumInit = Window_ShopNumber.prototype.initialize;
+Window_ShopNumber.prototype.initialize = function(){
+	Window_ShopNumber.prototype.initialize.call(this, x, y, height);
+	this._mode = 'buy';
+}
+
+Theo.LINV.shopNumRefresh = Window_ShopNumber.prototype.refresh;
+Window_ShopNumber.prototype.refresh = function(){
+	Theo.LINV.shopNumRefresh.call(this);
+	this.drawItemSize();
+}
+
+Window_ShopNumber.prototype.drawItemSize = function(){
+	let num = this._number + this._item.invSize;
+	let total = $gameParty.totalInvSize() + (this._mode === 'buy' ? num : num * -1);
+	let txt = `${total}/${$gameParty.invMax()}`;
+	let ypos = this.itemY() + lineHeight() * 4;
+	this.changeTextColor(this.systemColor());
+	this.drawText(Theo.LINV.Params['invSlotVocab'],6,ypos,contents.width-12);
+	this.changeTextColor(this.normalColor());
+	this.drawText(txt,6,ypos,contents.width-12,'right');
+}
+//===================================================================
+// ** Default Script - Window_ShopStatus
+//===================================================================
+if (Theo.LINV.Params['displayItem']){
+	Theo.LINV.shopStatusPossession = Window_ShopStatus.prototype.drawPossession;
+	Window_ShopStatus.prototype.drawPossession = function(x, y){
+		Theo.LINV.shopStatusPossession.call(this, x, y);
+		y += lineHeight();
+		this.drawItemSize(this._item, x, y, contents.width - (x*2));
+	}
+}
+//===================================================================
+// ** Default Script - Scene_Menu
+//===================================================================
+Theo.LINV.sceneMenuCreate = Scene_Menu.prototype.create;
+Scene_Menu.prototype.create = function(){
+	Theo.LINV.sceneMenuCreate.call(this);
+	this.createLinvWindow();
+}
+
+Scene_Menu.prototype.createLinvWindow = function(){
+	this._linvWindow = new Theo.LINV.Window_MainMenu(this._goldWindow.width);
+	this._linvWindow.x = this._commandWindow.x;
+	this._linvWindow.y = this._commandWindow.height;
+	this._linvWindow.refresh();
+	this.addWindow(this._linvWindow);
+}
+//===================================================================
+// ** Default Script - Scene_Item
+//===================================================================
+Theo.LINV.sceneItemCreate = Scene_Item.prototype.create;
+Scene_Item.prototype.create = function(){
+	Theo.LINV.sceneItemCreate.call(this);
+	this.resizeItemWindow();
+  this.createFreeslotWindow();
+  this.createItemsizeWindow();
+  this.createUsecommandWindow();
+  this.createDiscardAmount();
+}
+
+Scene_Item.prototype.resizeItemWindow = function(){
+	this._itemWindow.height -= this._itemWindow.lineHeight() * 2;
+}
+
+Scene_Item.prototype.createFreeslotWindow = function(){
+	let wy = this._itemWindow.y + this._itemWindow.height;
+  let wh = Theo.LINV.Params['displayItem'] ? Graphics.width/2 : Graphics.width;
+  this._freeSlot = new Theo.LINV.Window_FreeSlot(0,wy,wh);
+  this.addWindow(this._freeslot);
+}
+
+Scene_Item.prototype.createItemsizeWindow = function(){
+	if(!Theo.LINV.Params['displayItem']){return};
+	let wx = this._freeslot.width
+  let wy = this._freeslot.y
+  let ww = wx
+  this._itemSize = new Theo.LINV.Window_ItemSize(wx,wy,ww)
+	this._itemWindow.itemSizeWindow = this._itemSize
+	this.addWindow(this._itemSize)
+}
+
+Scene_Item.prototype.createUsecommandWindow = function(){
+	this._useCommand = new Theo.LINV.Window_ItemUse()
+  this._useCommand.toCenter()
+	this._useCommand.setHandler('use', this.useCommandOk.bind(this))
+	this._useCommand.setHandler('discard', this.onDiscardOk.bind(this))
+  this._useCommand.setHandler('cancel', this.onUseCancel.bind(this))
+	this.addWindow(this._useCommand)
+}
+
+Scene_Item.prototype.createDiscardAmount = function(){
+	let wx = this._useCommand.x
+  let wy = this._useCommand.y + this._useCommand.height
+  let ww = this._useCommand.width
+  this._discardWindow = new Theo.LINV.Window_Discard(wx,wy,ww)
+  this._discardWindow.commandWindow = this._useCommand
+  this._discardWindow.itemList = this._itemWindow
+  this._discardWindow.freeSlot = this._freeSlot
+  this.addWindow(this._discardWindow)
+}
+
+// Overwrite
+Theo.LINV.sceneItem_OnItemOk = Scene_Item.prototype.onItemOk;
+Scene_Item.prototype.onItemOk = function(){
+	this._useCommand.setItem(this.item())
+  this._useCommand.open()
+  this._useCommand.activate()
+  this._useCommand.select(0)
+}
+
+Theo.LINV.sceneItem_UseItem = Scene_Item.prototype.useItem;
+Scene_Item.prototype.useItem = function(){
+	this._useCommand.close()
+	Theo.LINV.sceneItem_UseItem.call(this)
+	this._freeSlot.refresh();
+}
+
+Scene_Item.prototype.useCommandOk = function(){
+	Theo.LINV.sceneItem_OnItemOk.call(this);
+	this._useCommand.close();
+}
+
+Scene_Item.prototype.onDiscardOk = function(){
+	this._discardWindow.setItem(this.item())
+	this._discardWindow.open()
+}
+
+Scene_Item.prototype.onUseCancel = function(){
+	this._itemWindow.activate()
+  this._useCommand.close()
+  this._useCommand.deactivate()
+}
+
+//===================================================================
+// ** Default Script - Scene_Shop
+//===================================================================
+Theo.LINV.shopBuyOk = Scene_Shop.prototype.onBuyOk;
+Scene_Shop.prototype.onBuyOk = function() {
+	this._numberWindow._mode = 'buy';
+	Theo.LINV.shopBuyOk.call(this);
+};
+
+Theo.LINV.shopSellOk = Scene_Shop.prototype.onSellOk;
+Scene_Shop.prototype.onSellOk = function() {
+    this._numberWindow._mode = 'sell';
+	Theo.LINV.shopSellOk.call(this);
 };
