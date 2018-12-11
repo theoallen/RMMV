@@ -206,7 +206,7 @@ Theo.LINV.loadData = function(db){
 Theo.LINV.actorSetup = Game_Actor.prototype.setup;
 Game_Actor.prototype.setup = function(actorId) {
 	Theo.LINV.actorSetup.call(this, actorId);
-    var actor = $dataActors[actorId];
+    	var actor = $dataActors[actorId];
 	this._baseInv = actor.invMod;
 };
 
@@ -240,13 +240,13 @@ Game_Actor.prototype.invMax = function(){
 
 // Overwrite
 Game_Actor.prototype.tradeItemWithParty = function(newItem, oldItem) {
-  if (newItem && !$gameParty.hasItem(newItem)) {
-     return false;
-  }else{
-     $gameParty.forceGainItem(oldItem, 1);
-     $gameParty.forceGainItem(newItem, -1);
-     return true;
-  }
+  	if (newItem && !$gameParty.hasItem(newItem)) {
+     		return false;
+  	}else{
+     		$gameParty.forceGainItem(oldItem, 1);
+     		$gameParty.forceGainItem(newItem, -1);
+     		return true;
+  	}
 };
 //===================================================================
 // ** Game_Party
@@ -290,7 +290,7 @@ Game_Party.prototype.totalInvSize = function(){
 // Overwrite
 Theo.LINV.partyMaxItem = Game_Party.prototype.maxItems;
 Game_Party.prototype.maxItems = function(item) {
-  if (DataManager.isBattleTest()){
+  	if (DataManager.isBattleTest()){
 		return Theo.LINV.partyMaxItem.call(this, item)
 	}else{
 		return this.invMaxItem(item) + this.numItems(item);
@@ -309,7 +309,7 @@ Game_Party.prototype.freeSlot = function(){
 // Overwrite
 Theo.LINV.partyHasMaxItem = Game_Party.prototype.hasMaxItems;
 Game_Party.prototype.hasMaxItems = function(item) {
-  if (DataManager.isBattleTest()){
+  	if (DataManager.isBattleTest()){
 		return Theo.LINV.partyHasMaxItem.call(this, item)
 	}else{
 		return this.isInvMaxed();
@@ -327,17 +327,17 @@ Game_Party.prototype.itemSize = function(item){
 
 Game_Party.prototype.forceGainItem = function(item, amount, includeEquip){
 	var container = this.itemContainer(item);
-  if (container) {
+  	if (container) {
 		var lastNumber = this.numItems(item);
 		var newNumber = lastNumber + amount;
-    container[item.id] = Math.max(newNumber, 0);
-    if (container[item.id] === 0) {
-			delete container[item.id];
-    }
-    if (includeEquip && newNumber < 0) {
-      this.discardMembersEquip(item, -newNumber);
-    }
-    $gameMap.requestRefresh();
+    	container[item.id] = Math.max(newNumber, 0);
+    	if (container[item.id] === 0) {
+		delete container[item.id];
+    	}
+    	if (includeEquip && newNumber < 0) {
+      		this.discardMembersEquip(item, -newNumber);
+    	}
+    	$gameMap.requestRefresh();
   }
 }
 
@@ -606,7 +606,7 @@ Window_ItemList.prototype.changeHeight = function(height){
 
 // Overwrite
 Window_ItemList.prototype.isEnabled = function(item) {
-  if (item){return true}else{return false};
+  	if (item){return true}else{return false};
 };
 //===================================================================
 // ** Default Script - Window_ShopNumber
@@ -667,10 +667,10 @@ Theo.LINV.sceneItemCreate = Scene_Item.prototype.create;
 Scene_Item.prototype.create = function(){
 	Theo.LINV.sceneItemCreate.call(this);
 	this.resizeItemWindow();
-  this.createFreeslotWindow();
-  this.createItemsizeWindow();
-  this.createUsecommandWindow();
-  this.createDiscardAmount();
+  	this.createFreeslotWindow();
+  	this.createItemsizeWindow();
+  	this.createUsecommandWindow();
+  	this.createDiscardAmount();
 }
 
 Scene_Item.prototype.resizeItemWindow = function(){
@@ -679,17 +679,17 @@ Scene_Item.prototype.resizeItemWindow = function(){
 
 Scene_Item.prototype.createFreeslotWindow = function(){
 	let wy = this._itemWindow.y + this._itemWindow.height;
-  let wh = Theo.LINV.Params['displayItem'] ? Graphics.width/2 : Graphics.width;
-  this._freeSlot = new Theo.LINV.Window_FreeSlot(0,wy,wh);
-  this.addWindow(this._freeslot);
+  	let wh = Theo.LINV.Params['displayItem'] ? Graphics.width/2 : Graphics.width;
+  	this._freeSlot = new Theo.LINV.Window_FreeSlot(0,wy,wh);
+  	this.addWindow(this._freeslot);
 }
 
 Scene_Item.prototype.createItemsizeWindow = function(){
 	if(!Theo.LINV.Params['displayItem']){return};
 	let wx = this._freeslot.width
-  let wy = this._freeslot.y
-  let ww = wx
-  this._itemSize = new Theo.LINV.Window_ItemSize(wx,wy,ww)
+  	let wy = this._freeslot.y
+  	let ww = wx
+  	this._itemSize = new Theo.LINV.Window_ItemSize(wx,wy,ww)
 	this._itemWindow.itemSizeWindow = this._itemSize
 	this.addWindow(this._itemSize)
 }
@@ -705,22 +705,22 @@ Scene_Item.prototype.createUsecommandWindow = function(){
 
 Scene_Item.prototype.createDiscardAmount = function(){
 	let wx = this._useCommand.x
-  let wy = this._useCommand.y + this._useCommand.height
-  let ww = this._useCommand.width
-  this._discardWindow = new Theo.LINV.Window_Discard(wx,wy,ww)
-  this._discardWindow.commandWindow = this._useCommand
-  this._discardWindow.itemList = this._itemWindow
-  this._discardWindow.freeSlot = this._freeSlot
-  this.addWindow(this._discardWindow)
+  	let wy = this._useCommand.y + this._useCommand.height
+  	let ww = this._useCommand.width
+  	this._discardWindow = new Theo.LINV.Window_Discard(wx,wy,ww)
+  	this._discardWindow.commandWindow = this._useCommand
+  	this._discardWindow.itemList = this._itemWindow
+  	this._discardWindow.freeSlot = this._freeSlot
+  	this.addWindow(this._discardWindow)
 }
 
 // Overwrite
 Theo.LINV.sceneItem_OnItemOk = Scene_Item.prototype.onItemOk;
 Scene_Item.prototype.onItemOk = function(){
 	this._useCommand.setItem(this.item())
-  this._useCommand.open()
-  this._useCommand.activate()
-  this._useCommand.select(0)
+  	this._useCommand.open()
+  	this._useCommand.activate()
+  	this._useCommand.select(0)
 }
 
 Theo.LINV.sceneItem_UseItem = Scene_Item.prototype.useItem;
@@ -742,8 +742,8 @@ Scene_Item.prototype.onDiscardOk = function(){
 
 Scene_Item.prototype.onUseCancel = function(){
 	this._itemWindow.activate()
-  this._useCommand.close()
-  this._useCommand.deactivate()
+	this._useCommand.close()
+	this._useCommand.deactivate()
 }
 
 //===================================================================
@@ -757,6 +757,6 @@ Scene_Shop.prototype.onBuyOk = function() {
 
 Theo.LINV.shopSellOk = Scene_Shop.prototype.onSellOk;
 Scene_Shop.prototype.onSellOk = function() {
-    this._numberWindow._mode = 'sell';
+	this._numberWindow._mode = 'sell';
 	Theo.LINV.shopSellOk.call(this);
 };
