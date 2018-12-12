@@ -4,7 +4,6 @@
 
 function Scene_Example() {
 	Stage.prototype.initialize.call(this);
-	this._layer = new PIXI.display.Layer();
 	this._spr = new Sprite();
 	this._spr.bitmap = ImageManager.loadEnemy('Mimic');
 	
@@ -12,9 +11,8 @@ function Scene_Example() {
 	this._spr.y = 100;
 	
 	this._window = new Window_Base(20,20,100,36*2);
-	this._layer.addChild(this._spr);
-	this._layer.addChild(this._window);
-	this.addChild(this._layer);
+	this.addChild(this._spr);
+	this.addChild(this._window);
 }
 
 Scene_Example.prototype = Object.create(Stage.prototype);
