@@ -44,6 +44,6 @@ window.onload = function() {
 	},16);
 	Graphics.initialize(800, 600, 'webgl');
 	Input.initialize();
-  TouchInput.initialize();
+	TouchInput.initialize();
 	// SceneManager.run(Scene_Boot);
 };
