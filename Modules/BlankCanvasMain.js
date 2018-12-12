@@ -5,8 +5,8 @@
 function Scene_Example() {
 	Stage.prototype.initialize.call(this);
 	this._layer = new PIXI.display.Layer();
-  this._spr = new Sprite();
-  this._spr.bitmap = ImageManager.loadEnemy('Mimic');
+	this._spr = new Sprite();
+	this._spr.bitmap = ImageManager.loadEnemy('Mimic');
 	
 	this._spr.x = 100;
 	this._spr.y = 100;
