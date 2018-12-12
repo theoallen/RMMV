@@ -26,7 +26,7 @@ Scene_Example.prototype.update = function(){
 	Graphics.render(this);
 	Input.update();
 	TouchInput.update();
-  this._window.update();
+	this._window.update();
 }
 
 PluginManager.setup($plugins);
