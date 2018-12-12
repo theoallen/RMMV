@@ -195,7 +195,6 @@ Theo.LINV.loadActorDefault = function(actors){
 	actors.forEach(function(actor){
 		if(!actor){return};
 		actor.invMod = Number(Theo.LINV.Params['defaultFree']);
-		console.log(actor.invMod);
 	})
 }
 
