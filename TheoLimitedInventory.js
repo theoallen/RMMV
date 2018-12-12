@@ -186,7 +186,6 @@ DataManager.isDatabaseLoaded = function(){
 				Theo.LINV.loadData(db);
 			})
 		})
-		$dataActors.forEach(function(a){if(!a){return};console.log(a.invMod)});
 		Theo.LINV.invLoaded = true;
 	}
     return true;
