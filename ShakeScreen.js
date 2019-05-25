@@ -20,9 +20,9 @@ p.s: you can substitute "Shake" with "ShakeScreen" or "ScreenShake"
 for your own convenience.
 
 Example:
-Shake 45 10
-ShakeScreen 45 10
-ScreenShake 45 10
+Shake 10 45
+ShakeScreen 10 45
+ScreenShake 10 45
 
 Terms of Use:
 - Free for commercial
@@ -59,7 +59,8 @@ Spriteset_Base.prototype.updatePosition = function(){
 Theo.Shake.plugin_command = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function(command, args){
     Theo.Shake.plugin_command.call(this, command, args);
-    if(command === 'ShakeScreen' || command === 'Shake' || command === 'ScreenShake'){
+    command = command.toLowerCase();
+    if(command === 'shakescreen' || command === 'shake' || command === 'screenshake'){
         $gameTemp.shake_screen(args[0], args[1]);
     }
 }
