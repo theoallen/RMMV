@@ -9,7 +9,7 @@ This plugin simply shakes the screen. I'm not sure what else to add.
 To use this plugin, use Plugin Command from the event command, then
 type this:
 
-Shake <duration> <power>
+Shake <power> <duration>
 - <duration> = duration in frames. Putting 45 means it will last for
                45 frames.
 - <power> = How many pixel of shake/displacement. Putting 10 means 
