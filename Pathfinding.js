@@ -1,10 +1,10 @@
 /*:
-@plugindesc Determine the shortest path from starting position to target.
+@plugindesc Generate the shortest path from starting position to target.
 @author TheoAllen
 @help 
 Version 1.0
 
-This script simply for determine the shortest path started from a character 
+This script simply to generate the shortest path started from a character 
 position to target coodrinate.
 
 This scripts EXTENDS move route. Means it will only work in move route 
