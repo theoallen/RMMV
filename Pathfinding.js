@@ -57,9 +57,7 @@ Theo.Pathfind.Queue = function(tx, ty, first_node){
 //---------------------------------------------------------------------------
 (function(q){
     q.range = function(node){
-        let range_x = node.x - this.tx;
-        let range_y = node.y - this.ty;
-        return Math.sqrt(Math.pow(range_x, 2) + Math.pow(range_y, 2));
+        return $gameMap.distance(node.x, node.y, this.x, this.y)
     };
 
     q.push = function(new_node, parent_node){
